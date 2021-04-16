@@ -68,12 +68,12 @@ public class Player : MonoBehaviour
         //rb.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
     }
 
-    private void LateUpdate()
-    {
-        vec.x = cameraHolder.transform.position.x;
-        vec.y = transform.position.y;
-        vec.z = transform.position.z;
+    //private void LateUpdate()
+    //{
+    //    vec.x = cameraHolder.transform.position.x;
+    //    vec.y = transform.position.y;
+    //    vec.z = transform.position.z;
 
-        cameraHolder.transform.position = vec;
-    }
+    //    cameraHolder.transform.position = vec;
+    //}
 }
