@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Player : MonoBehaviour
 {
@@ -24,14 +25,14 @@ public class Player : MonoBehaviour
     Vector3 currentPosition;
     bool isFoodEaten = false;
     private int playerScore = 0;
-    [SerializeField]private int multiplier = 1;
+    [SerializeField] private int multiplier = 1;
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         cameraHolder = Camera.main.transform.parent;
-        downRotation = Quaternion.Euler(-45, 0, 0);
-        upRotation = Quaternion.Euler(45, 0, 0);
+        downRotation = Quaternion.Euler(-45, 20, 0);
+        upRotation = Quaternion.Euler(45, 20, 0);
         MoveBSValueTo("A", 0, .18f);
         MoveBSValueTo("M", 100, .18f);
     }
@@ -42,15 +43,30 @@ public class Player : MonoBehaviour
         {
             isFoodEaten = true;
             DestroyFood(col.gameObject);
-            MoveBSValueTo("A", 58, .18f);
-            MoveBSValueTo("M", 0, .18f);
             playerScore++;
-            GameManager.Instance.UpdadeScore(playerScore,multiplier);
+            GameManager.Instance.UpdadeScore(playerScore, multiplier);
+            StartCoroutine(MoveMouth());
         }
         if (col.gameObject.CompareTag("Ground"))
         {
             GameManager.Instance.Restart();
         }
+        if (col.gameObject.CompareTag("FinishCube"))
+        {
+            //Time.timeScale = 0;
+            gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            print(col.gameObject.name);
+        }
+
+    }
+
+    IEnumerator MoveMouth()
+    {
+        MoveBSValueTo("A", 58, .05f);
+        MoveBSValueTo("M", 0, .05f);
+        yield return new WaitForSeconds(.2f);
+        MoveBSValueTo("A", 0, .05f);
+        MoveBSValueTo("M", 100, .05f);
 
     }
 
@@ -78,12 +94,13 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Space) || Input.touchCount > 0 || Input.GetMouseButtonDown(0))
         {
-            isJump = true;
+            if (!EventSystem.current.IsPointerOverGameObject())
+                isJump = true;
         }
         if (lastPosition.y > currentPosition.y)
         {
             isPlayerDown = true;
-            transform.DORotate(new Vector3(30, 0, 0), .28f);
+            transform.DORotate(new Vector3(20, 20, 0), .4f);
         }
     }
 
@@ -100,7 +117,7 @@ public class Player : MonoBehaviour
         {
             rb.velocity = Vector3.zero;
             DOTween.Kill(transform);
-            transform.DORotate(new Vector3(-30, 0, 0), .28f);
+            transform.DORotate(new Vector3(-20, 20, 0), .4f);
             rb.AddForce(Vector3.up * jumpForce * Time.fixedDeltaTime, ForceMode.Impulse);
             isJump = false;
         }

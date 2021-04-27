@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,11 +10,16 @@ public class GameManager : LocalSingleton<GameManager>
 {
     [SerializeField] Text scoreText;
     [SerializeField] Button buttonRestart;
+    [SerializeField] GameObject panel;
     // Start is called before the first frame update
     void Start()
     {
         scoreText.text = "0";
+        if (panel.activeInHierarchy)
+            panel.gameObject.SetActive(false);
+
         buttonRestart.gameObject.SetActive(false);
+        buttonRestart.transform.localScale = Vector3.zero;
         buttonRestart.onClick.AddListener(() => RestartGame());
     }
 
@@ -36,6 +42,8 @@ public class GameManager : LocalSingleton<GameManager>
 
     internal void Restart()
     {
+        panel.gameObject.SetActive(true);
         buttonRestart.gameObject.SetActive(true);
+        buttonRestart.transform.DOScale(1,.2f);
     }
 }
